@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content id="ws_1691068085" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa" version="117" date="2020-04-05" save="0" sync="false" lastupdate="1588545515">
+  <dependency version="250"/>
+  <text language="7" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="33" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="34" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="39" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="44" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="49" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="55" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="81" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="82" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="86" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+  <text language="88" name="Kaamo transfer" description="Just select an item and it will be transported between two selected stations" author="Misimpa"/>
+</content>
