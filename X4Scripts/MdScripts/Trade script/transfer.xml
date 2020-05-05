@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Transfer Ai, Created by Misimpa. Version 1-->
-<aiscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Transfer" xsi:noNamespaceSchemaLocation="aiscripts.xsd" version="1">
+<aiscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Transfer" xsi:noNamespaceSchemaLocation="D:\Source\libraries\aiscripts.xsd" version="1">
   <order id="Transfer" name="Transfer" description="Transfer cargo." category="trade" infinite="true">
     <params>
 
@@ -8,8 +8,6 @@
       <param name="supplierStation" default="none" type="object" text="Supplyer station" comment="Supplyer station">
         <input_param name="class" value="[class.station]"/>
       </param>
-
-      <
 
       <!-- Назначить базу покупателя -->
       <param name="byerStation" default="none" type="object" text="Byer station" comment="Byer station">
@@ -21,7 +19,7 @@
         <input_param name="type" value="'ware'"/>
         <input_param name="cancarry" value="this.ship"/>
       </param>
-
+      
       <!-- Ограничения для продажи -->
       <!-- <param name="stockRatioToBuy" type="number" text="Buy before X% filled (Station Trader)" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
 				<input_param name="min" value="5"/>
@@ -59,17 +57,20 @@
 
     <!--some global variables-->
     <set_value name="$pilotManagementSkill" exact="this.ship.pilot.skill.management"/>
-
-    <debug_to_file name="this.ship.idcode" directory="'Transfer'" text="'debug init: ' +(this.ship.knownname)+ ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +this.ship.cargo.capacity.container+ ', player money: ' +player.money"/>
+    <set_value name="$shipName" exact="this.ship.knownname"/>
+    <set_value name="$amount" exact="this.ship.cargo.capacity.container"/>
+    <set_value name ="$shipId" exact="this.ship.idcode"/>
+    
+    <debug_to_file name="$shipId" directory="'Transfer'" text="'debug init: ' + $shipName + ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +this.ship.cargo.capacity.container+ ', player money: ' +player.money"/>
   </init>
 
   <attention min="unknown">
     <actions>
-      <set_value name="$amount" exact="this.ship.cargo.capacity.container"/>
-
-      <debug_to_file name="this.ship.idcode" directory="'Transfer'" text="$supplierStation" append="true"/>
-      <debug_to_file name="this.ship.idcode" directory="'Transfer'" text="$byerStation" append="true"/>
-      <debug_to_file name="this.ship.idcode" directory="'Transfer'" text="$wareBasket" append="true"/>
+      
+      <debug_to_file name="$shipId" directory="'Transfer'" text="$shipName" append="true"/>
+      <debug_to_file name="$shipId" directory="'Transfer'" text="$supplierStation" append="true"/>
+      <debug_to_file name="$shipId" directory="'Transfer'" text="$byerStation" append="true"/>
+      <debug_to_file name="$shipId" directory="'Transfer'" text="$wareBasket" append="true"/>
 
     </actions>
   </attention>

@@ -46,14 +46,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MdScripts\Trade script\md\aiscripts.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="MdScripts\Trade script\md\md.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="MdScripts\Trade script\md\scriptproperties.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MdScripts\Trade script\content.xml" />
     <Content Include="MdScripts\Trade script\md\trade _MD.xml" />
-    <Content Include="XMLFile1.xml" />
+    <Content Include="MdScripts\Trade script\transfer.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -9,7 +9,6 @@
         <input_param name="class" value="[class.station]"/>
       </param>
       
-      <
       
       <!-- Назначить базу покупателя -->
       <param name="byerStation" default="none" type="object" text="Byer station" comment="Byer station">
