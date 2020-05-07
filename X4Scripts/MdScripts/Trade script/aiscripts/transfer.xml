@@ -59,56 +59,65 @@
     <set_value name="$pilotManagementSkill" exact="this.ship.pilot.skill.management"/>
     <set_value name="$shipName" exact="this.ship.knownname"/>
     <set_value name ="$shipId" exact="this.ship.idcode"/>
-    
-    <debug_to_file name="$shipId" directory="'Transfer'" text="'debug init: ' + $shipName + ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +this.ship.cargo.capacity.container+ ', player money: ' +player.money"/>
+    <set_value name ="$shipCapacity" exact="this.ship.cargo.capacity.container"/>
+
+    <debug_to_file name="$shipId" directory="'Transfer'" text="'debug init: ' + $shipName + ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +$shipCapacity+ ', player money: ' +player.money"/>
   </init>
 
   <attention min="unknown">
     <actions>
+      
+      
+      
+      <!-- Start -->
       <label name="start"/>
-
       <do_if value="$supplierStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$supplierStation == null'" append="true"/>
-        <wait exact="10s"/>
+        <wait exact="20s"/>
         <resume label="start" />
       </do_if>
 
       <do_if value="$byerStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$byerStation == null'" append="true"/>
-        <wait exact="10s"/>
+        <wait exact="20s"/>
         <resume label="start" />
       </do_if>
       
-      <label name="findBuy"/>
+      
+      <!-- Buy cargo -->
+      <label name="findplaceToBuy"/>
+      <set_value name="$wareVolume" exact="$wareBasket.{1}.volume" />
+      <set_value name="$cargoAmount" exact="($shipCapacity / $wareVolume)i" /> 
       <find_sell_offer tradepartner="this.ship" space="player.galaxy" seller="$supplierStation" result="$sellOffer" wares="$wareBasket"/>
-
+      
       <do_if value="$sellOffer == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$sellOffer == null'" append="true"/>
         <wait exact="30s"/>
-        <resume label="findBuy" />
-        
+        <resume label="findplaceToBuy" />
       </do_if>
-      <set_value name="$buyAmount" exact="this.ship.cargo.capacity.container" />
-      <debug_to_file name="$shipId" directory="'Transfer'" text="$sellOffer" append="true"/>
-      <create_trade_order object="this.ship" amount="$buyAmount" tradeoffer="$sellOffer" />
+      <show_notification text="'Loding ' + $cargoAmount + $wareBasket.{1}.name + ' from (' + $supplierStation.idcode + ') ' + $supplierStation.name" sound="notification_hint"/>
+      <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$sellOffer" />
 
-      <label name="findSell"/>
-      <set_value name="$currentWare" exact="$cargo.{0}" />
-      <set_value name="$sellAmount" exact="$sellOffer.amount" />
-      <find_buy_offer tradepartner="this.ship" space="player.galaxy" buyer="$byerStation" result="$buyOffer" wares="$currentWare"/>
+      
+      <!-- Sell cargo -->
+      <label name="findPlaceToSell"/>
+      <find_buy_offer tradepartner="this.ship" space="player.galaxy" buyer="$byerStation" result="$buyOffer" wares="$wareBasket"/>
       
       <do_if value="$buyOffer == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$buyOffer == null'" append="true"/>
         <wait exact="30s"/>
-        <resume label="findSell" />
+        <resume label="findPlaceToSell" />
       </do_if>
+      <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$buyOffer" />
+
       
-      <debug_to_file name="$shipId" directory="'Transfer'" text="$sellAmount" append="true"/>
-      <create_trade_order object="this.ship" amount="$sellAmount" tradeoffer="$buyOffer" />
-
-      <remove_value name="$currentWare"/>
-      <remove_value name="$sellAmount"/>
-
+      <!-- Wait order -->
+      <create_order id="'WaitForSignal'" object="this.ship" immediate="true" override="true">
+        <param name="timeout" value="10s"/>
+        <param name="releasesignal" value="['proceed', $inspector]"/>
+        <param name="signaller" value="$inspector"/>
+      </create_order>
+      
       <wait exact="10s"/>
 
       <resume label="start" />
