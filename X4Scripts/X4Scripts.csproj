@@ -60,6 +60,7 @@
     <Content Include="MdScripts\Trade script\content.xml" />
     <Content Include="MdScripts\Trade script\aiscripts\transfer.xml" />
     <Content Include="MdScripts\Trade script\t\0001-l007.xml" />
+    <Content Include="MdScripts\Trade script\t\0001-l044.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

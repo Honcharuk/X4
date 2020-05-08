@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="44">
+	<page id="2612" title="Default texts" descr="Text for Trade mod" voice="no">
+		<t id="26121">Shipping</t>
+		<t id="26122">Shipping to a shipyard or other station</t>
+		<t id="26123">Where to get the goods</t>
+		<t id="26124">Where to deliver the goods</t>
+		<t id="26125">Observe filling</t>
+		<t id="26126">Auto Product Selection</t>
+	</page>
+</language>

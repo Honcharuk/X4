@@ -19,17 +19,17 @@
         <input_param name="type" value="'ware'"/>
         <input_param name="cancarry" value="this.ship"/>
       </param>
-      
-      <!-- Ограничения для продажи -->
-      
-      <param name="autoselectWares" type="bool" default="false" text="{2612, 26126}" comment="Autoselect ware for byerStation?"/>
-      
-      <param name="stockRatioToBuy" type="number" text="{2612 , 26125}" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
-				<input_param name="min" value="25"/>
-				<input_param name="max" value="95"/>
-				<input_param name="step" value="5"/>
-			</param>
 
+      <!-- Ограничения для продажи -->
+
+      <param name="autoselectWares" type="bool" default="false" text="{2612, 26126}" comment="Autoselect ware for byerStation?"/>
+      <!--
+      <param name="stockRatioToBuy" type="number" text="{2612 , 26125}" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
+        <input_param name="min" value="25"/>
+        <input_param name="max" value="95"/>
+        <input_param name="step" value="5"/>
+      </param>
+      -->
 
     </params>
     <skill min="20"/>
@@ -57,7 +57,7 @@
     <set_order_syncpoint_reached order="this.ship.order"/>
 
     <set_command_action commandaction="commandaction.searchingtrades"/>
-    
+
     <!--some global variables-->
     <set_value name ="$pilotManagementSkill" exact="this.ship.pilot.skill.management"/>
     <set_value name ="$shipName" exact="this.ship.knownname"/>
@@ -65,7 +65,7 @@
     <set_value name ="$shipCapacity" exact="this.ship.cargo.capacity.container"/>
 
     <debug_to_file name="$shipId" directory="'Transfer'" text="'debug init: ' + $shipName + ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +$shipCapacity+ ', player money: ' +player.money"/>
-    
+
     <do_if value="$autoselectWares" exact ="true">
       <set_value name="$wareBasketTemp" exact="[ware.spacefuel,ware.spaceweed,ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
                     ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
@@ -82,55 +82,55 @@
 
   <attention min="unknown">
     <actions>
-      
-      
+
+
       <!-- Start -->
       <label name="start"/>
-      
-      
+
+
       <debug_to_file name="$shipId" directory="'Transfer'" text="'$stockRatioToBuy: ' + $stockRatioToBuy" append="true"/>
-      
-      
+
+
       <do_if value="$supplierStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$supplierStation == null'" append="true"/>
         <wait exact="20s"/>
         <resume label="start" />
       </do_if>
-      
-      
+
+
       <do_if value="$byerStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$byerStation == null'" append="true"/>
         <wait exact="20s"/>
         <resume label="start" />
       </do_if>
-      
-      
+
+
       <!-- Цикл загрузки товорав из списка со станции и передачи его на другую станцию -->
       <do_if value="$wareBasket.count gt 0">
         <do_all exact="$wareBasket.count" counter="$ii">
           <set_value name="$currentWare" exact="$wareBasket.{$ii}"/>
           <debug_to_file name="$shipId" directory="'Transfer'" text="'$currentWare: ' + $currentWare" append="true"/>
           <find_buy_offer tradepartner="this.ship" space="player.galaxy" buyer="$byerStation" result="$buyOffer" wares="$currentWare"/>
-        
+
           <do_if value="$buyOffer == null">
             <continue/>
           </do_if>
-        
+
           <set_value name="$wareVolume" exact="$currentWare.volume" />
           <debug_to_file name="$shipId" directory="'Transfer'" text="'$wareVolume: ' + $wareVolume" append="true"/>
           <set_value name="$cargoAmount" exact="($shipCapacity / $wareVolume)i" />
           <debug_to_file name="$shipId" directory="'Transfer'" text="'$currentWare: ' + $currentWare" append="true"/>
-          
+
           <find_sell_offer tradepartner="this.ship" space="player.galaxy" seller="$supplierStation" result="$sellOffer" wares="$currentWare"/>
 
           <do_if value="$sellOffer == null">
             <continue/>
           </do_if>
-          
+
           <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$sellOffer" />
-          
+
           <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$buyOffer" />
-          
+
           <wait min="10s" max="30s"/>
         </do_all>
       </do_if>
