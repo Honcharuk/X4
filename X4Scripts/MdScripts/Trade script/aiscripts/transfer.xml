@@ -1,31 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Transfer Ai, Created by Misimpa. Version 1-->
 <aiscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Transfer" xsi:noNamespaceSchemaLocation="D:\Source\libraries\aiscripts.xsd" version="1">
-  <order id="Transfer" name="Transfer" description="Transfer cargo." category="trade" infinite="true">
+  <order id="Transfer" name="{2612, 26121}" description="{2612, 26122}" category="trade" infinite="true">
     <params>
 
       <!-- Назначить базу поставщика -->
-      <param name="supplierStation" default="none" type="object" text="Supplyer station" comment="Supplyer station">
+      <param name="supplierStation" default="none" type="object" text="{2612, 26123}" comment="Supplyer station">
         <input_param name="class" value="[class.station]"/>
       </param>
 
       <!-- Назначить базу покупателя -->
-      <param name="byerStation" default="none" type="object" text="Byer station" comment="Byer station">
+      <param name="byerStation" default="none" type="object" text="{2612, 26124}" comment="Byer station">
         <input_param name="class" value="[class.station]"/>
       </param>
 
-      <!-- Список товаров -->
+      <!-- Список товаров {page-1041, id-10146} -->
       <param name="wareBasket" default="[]" type="list" text="{1041, 10146}" comment="Wares">
         <input_param name="type" value="'ware'"/>
         <input_param name="cancarry" value="this.ship"/>
       </param>
       
       <!-- Ограничения для продажи -->
-      <!-- <param name="stockRatioToBuy" type="number" text="Buy before X% filled (Station Trader)" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
-				<input_param name="min" value="5"/>
-				<input_param name="max" value="100"/>
+      
+      <param name="autoselectWares" type="bool" default="false" text="Autoselect?" comment="Autoselect ware for byerStation?"/>
+      
+      <param name="stockRatioToBuy" type="number" text="{2612 , 26125}" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
+				<input_param name="min" value="25"/>
+				<input_param name="max" value="95"/>
 				<input_param name="step" value="5"/>
-			</param> -->
+			</param>
 
 
     </params>
@@ -56,8 +59,8 @@
     <set_command_action commandaction="commandaction.searchingtrades"/>
     
     <!--some global variables-->
-    <set_value name="$pilotManagementSkill" exact="this.ship.pilot.skill.management"/>
-    <set_value name="$shipName" exact="this.ship.knownname"/>
+    <set_value name ="$pilotManagementSkill" exact="this.ship.pilot.skill.management"/>
+    <set_value name ="$shipName" exact="this.ship.knownname"/>
     <set_value name ="$shipId" exact="this.ship.idcode"/>
     <set_value name ="$shipCapacity" exact="this.ship.cargo.capacity.container"/>
 
@@ -68,60 +71,61 @@
     <actions>
       
       
-      
       <!-- Start -->
       <label name="start"/>
+      
+      
+      <debug_to_file name="$shipId" directory="'Transfer'" text="'$stockRatioToBuy: ' + $stockRatioToBuy" append="true"/>
+      
+      
       <do_if value="$supplierStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$supplierStation == null'" append="true"/>
         <wait exact="20s"/>
         <resume label="start" />
       </do_if>
-
+      
+      
       <do_if value="$byerStation == null">
         <debug_to_file name="$shipId" directory="'Transfer'" text="'$byerStation == null'" append="true"/>
         <wait exact="20s"/>
         <resume label="start" />
       </do_if>
       
-      
-      <!-- Buy cargo -->
-      <label name="findplaceToBuy"/>
-      <set_value name="$wareVolume" exact="$wareBasket.{1}.volume" />
-      <set_value name="$cargoAmount" exact="($shipCapacity / $wareVolume)i" /> 
-      <find_sell_offer tradepartner="this.ship" space="player.galaxy" seller="$supplierStation" result="$sellOffer" wares="$wareBasket"/>
-      
-      <do_if value="$sellOffer == null">
-        <debug_to_file name="$shipId" directory="'Transfer'" text="'$sellOffer == null'" append="true"/>
-        <wait exact="30s"/>
-        <resume label="findplaceToBuy" />
+      <do_if value="$wareBasket.count gt 0">
+        <do_all exact="$wareBasket.count" counter="$ii">
+          <set_value name="$currentWare" exact="$wareBasket.{$ii}"/>
+          <debug_to_file name="$shipId" directory="'Transfer'" text="'$currentWare: ' + $currentWare" append="true"/>
+          <find_buy_offer tradepartner="this.ship" space="player.galaxy" buyer="$byerStation" result="$buyOffer" wares="$currentWare"/>
+        
+          <do_if value="$buyOffer == null">
+            <continue/>
+          </do_if>
+        
+          <set_value name="$wareVolume" exact="$currentWare.volume" />
+          <debug_to_file name="$shipId" directory="'Transfer'" text="'$wareVolume: ' + $wareVolume" append="true"/>
+          <set_value name="$cargoAmount" exact="($shipCapacity / $wareVolume)i" />
+          <set_value name ="$stationWareName" exact="$buyOffer.ware.name" />
+          <set_value name ="$stationWareStock" exact="$buyOffer.stocklevel" />
+        
+          <debug_to_file name="$shipId" directory="'Transfer'" text="'$stationWareName: ' + $stationWareName + ' $stationWareStock: ' + $stationWareStock" append="true"/>
+          
+          <find_sell_offer tradepartner="this.ship" space="player.galaxy" seller="$supplierStation" result="$sellOffer" wares="$currentWare"/>
+          <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$sellOffer" />
+          
+          <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$buyOffer" />
+          
+          <wait min="30s" max="60s"/>
+        </do_all>
       </do_if>
-      <show_notification text="'Loding ' + $cargoAmount + $wareBasket.{1}.name + ' from (' + $supplierStation.idcode + ') ' + $supplierStation.name" sound="notification_hint"/>
-      <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$sellOffer" />
-
       
-      <!-- Sell cargo -->
-      <label name="findPlaceToSell"/>
-      <find_buy_offer tradepartner="this.ship" space="player.galaxy" buyer="$byerStation" result="$buyOffer" wares="$wareBasket"/>
+      <set_value name ="$testVal" exact="'$testVal: ' + " />
       
-      <do_if value="$buyOffer == null">
-        <debug_to_file name="$shipId" directory="'Transfer'" text="'$buyOffer == null'" append="true"/>
-        <wait exact="30s"/>
-        <resume label="findPlaceToSell" />
-      </do_if>
-      <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$buyOffer" />
-
       
-      <!-- Wait order -->
-      <create_order id="'WaitForSignal'" object="this.ship" immediate="true" override="true">
-        <param name="timeout" value="10s"/>
-        <param name="releasesignal" value="['proceed', $inspector]"/>
-        <param name="signaller" value="$inspector"/>
-      </create_order>
       
-      <wait exact="10s"/>
-
-      <resume label="start" />
-
+      
+      
+      
+      <wait min="120s" max="240s"/>
     </actions>
   </attention>
 </aiscript>

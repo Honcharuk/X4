@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<language id="7">
+  <page id="2612" title="Default texts" descr="Text for Trade mod" voice="no">
+    <t id="26121">Перевозка</t>
+    <t id="26122">Перевозка груза на верфь или другую станцию.</t>
+    <t id="26123">Откуда брать груз.</t>
+    <t id="26124">Куда доставлять груз.</t>
+    <t id="26125">Соблюдать заполнение на уровне %</t>
+  </page>
+</language>
