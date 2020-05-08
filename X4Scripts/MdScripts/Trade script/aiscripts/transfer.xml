@@ -22,7 +22,7 @@
       
       <!-- Ограничения для продажи -->
       
-      <param name="autoselectWares" type="bool" default="false" text="Autoselect?" comment="Autoselect ware for byerStation?"/>
+      <param name="autoselectWares" type="bool" default="false" text="{2612, 26126}" comment="Autoselect ware for byerStation?"/>
       
       <param name="stockRatioToBuy" type="number" text="{2612 , 26125}" default="70" comment="How many % of the needed wares for our home station should we keep filled?">
 				<input_param name="min" value="25"/>
@@ -65,6 +65,19 @@
     <set_value name ="$shipCapacity" exact="this.ship.cargo.capacity.container"/>
 
     <debug_to_file name="$shipId" directory="'Transfer'" text="'debug init: ' + $shipName + ', pilot: ' +this.ship.pilot.knownname+ ', pilotManagementSkill: ' +$pilotManagementSkill+  ', ship capacity: ' +$shipCapacity+ ', player money: ' +player.money"/>
+    
+    <do_if value="$autoselectWares" exact ="true">
+      <set_value name="$wareBasketTemp" exact="[ware.spacefuel,ware.spaceweed,ware.advancedcomposites,ware.advancedelectronics,ware.antimattercells,ware.antimatterconverters,ware.claytronics,
+                    ware.dronecomponents,ware.engineparts,ware.fieldcoils,ware.hullparts,ware.refinedmetals,ware.scanningarrays,ware.shieldcomponents,ware.siliconwafers,
+                    ware.teladianium,ware.turretcomponents,ware.water,ware.wheat,ware.foodrations,ware.graphene,ware.majadust,ware.majasnails,ware.meat,ware.cheltmeat,
+                    ware.scruffinfruits,ware.microchips,ware.quantumtubes,ware.medicalsupplies,ware.missilecomponents,ware.nostropoil,ware.plasmaconductors,ware.smartchips,ware.sojabeans,
+                    ware.sojahusk,ware.spices,ware.sunriseflowers,ware.superfluidcoolant,ware.swampplant,ware.weaponcomponents]"/>
+      <set_value name="$wareBasket" exact="$wareBasketTemp"/>
+      <do_all exact="$wareBasket.count" counter="$jj">
+        <debug_to_file name="$shipId + ' - ware'" directory="'Transfer'" text="$wareBasket.{$jj}" append="true"/>
+      </do_all>
+      <debug_to_file name="$shipId + ' - ware'" directory="'Transfer'" text="'--end--'" append="true"/>
+    </do_if>
   </init>
 
   <attention min="unknown">
@@ -91,6 +104,8 @@
         <resume label="start" />
       </do_if>
       
+      
+      <!-- Цикл загрузки товорав из списка со станции и передачи его на другую станцию -->
       <do_if value="$wareBasket.count gt 0">
         <do_all exact="$wareBasket.count" counter="$ii">
           <set_value name="$currentWare" exact="$wareBasket.{$ii}"/>
@@ -104,27 +119,22 @@
           <set_value name="$wareVolume" exact="$currentWare.volume" />
           <debug_to_file name="$shipId" directory="'Transfer'" text="'$wareVolume: ' + $wareVolume" append="true"/>
           <set_value name="$cargoAmount" exact="($shipCapacity / $wareVolume)i" />
-          <set_value name ="$stationWareName" exact="$buyOffer.ware.name" />
-          <set_value name ="$stationWareStock" exact="$buyOffer.stocklevel" />
-        
-          <debug_to_file name="$shipId" directory="'Transfer'" text="'$stationWareName: ' + $stationWareName + ' $stationWareStock: ' + $stationWareStock" append="true"/>
+          <debug_to_file name="$shipId" directory="'Transfer'" text="'$currentWare: ' + $currentWare" append="true"/>
           
           <find_sell_offer tradepartner="this.ship" space="player.galaxy" seller="$supplierStation" result="$sellOffer" wares="$currentWare"/>
+
+          <do_if value="$sellOffer == null">
+            <continue/>
+          </do_if>
+          
           <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$sellOffer" />
           
           <create_trade_order object="this.ship" amount="$cargoAmount" tradeoffer="$buyOffer" />
           
-          <wait min="30s" max="60s"/>
+          <wait min="10s" max="30s"/>
         </do_all>
       </do_if>
-      
-      <set_value name ="$testVal" exact="'$testVal: ' + " />
-      
-      
-      
-      
-      
-      
+
       <wait min="120s" max="240s"/>
     </actions>
   </attention>
